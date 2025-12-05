@@ -8,8 +8,8 @@ var instructions = File.ReadAllLines("input.txt")
 
 foreach (var instruction in instructions)
 {
-    var number = dial.Rotate(instruction);
-    password.IncrementIfZeroValue(number);
+    var timesPointedAtZero = dial.Rotate(instruction);
+    password.IncrementBy(timesPointedAtZero);
 }
 
 Console.WriteLine($"Password: {password.Value}");
@@ -27,15 +27,17 @@ class Dial(int value)
     /// <summary>
     /// Rotates the dial following the provided instruction.
     /// </summary>
-    /// <returns>The value of the dial after rotation.</returns>
+    /// <returns>The number of times zero was pointed at by the arrow.</returns>
     public int Rotate(Instruction instruction) => Rotate(instruction.Direction, instruction.Value);
 
     /// <summary>
     /// Rotates the dial in the specified direction by the specified value.
     /// </summary>
-    /// <returns>The value of the dial after rotation.</returns>
+    /// <returns>The number of times zero was pointed at by the arrow.</returns>
     public int Rotate(Direction direction, int value)
     {
+        int timesPointingAtZero = 0;
+        
         for (int i = 0; i < value; i++)
         {
             Value = direction switch
@@ -44,8 +46,14 @@ class Dial(int value)
                 Direction.Right => Value == _maxValue ? _minValue : Value + 1,
                 _ => Value,
             };
+
+            if (Value == 0)
+            {
+                timesPointingAtZero++;
+            }
         }
-        return Value;
+
+        return timesPointingAtZero;
     }
 }
 
@@ -84,5 +92,10 @@ class Password
         {
             Value++;
         }
+    }
+
+    public void IncrementBy(int value)
+    {
+        Value += value;
     }
 }
