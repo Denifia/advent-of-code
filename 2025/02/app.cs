@@ -34,18 +34,55 @@ class Range
         {
             var number = i.ToString().AsSpan();
 
-            // skip odd length numbers
-            if (number.Length % 2 == 1)
-            {
-                continue;
-            }
-
-            int halfLength = number.Length / 2;
-            if (number[..halfLength].SequenceEqual(number[halfLength..]))
+            if (CheckItem(number) is Item.Invalid)
             {
                 sum += i;
             }
         }
         return sum;
     }
+
+    private static Item CheckItem(ReadOnlySpan<char> number)
+    {
+        // work backwards from the largest possible divides
+        double length = number.Length;
+        var halfLength = length / 2;
+        for (var i = (int)Math.Round(halfLength, MidpointRounding.ToZero); i > 0; i--)
+        {
+            var allSegmentsMatch = true;
+            if (length % i == 0)
+            {
+                // found a divisible pattern length
+                var pattern = number[..i];
+                var nextSegmentStart = i;
+
+                while (nextSegmentStart < number.Length)
+                {
+                    if (!number.Slice(nextSegmentStart, i).SequenceEqual(pattern))
+                    {
+                        allSegmentsMatch = false;
+                        break;
+                    }
+
+                    nextSegmentStart += i;
+                }
+
+                if (allSegmentsMatch)
+                {
+                    //Console.WriteLine($"invalid: {number}");
+
+                    // if all segments match, the item is invalid
+                    return Item.Invalid;
+                }
+            }
+        }
+
+        return Item.Valid;
+    }
+}
+
+enum Item
+{
+    Valid,
+    Invalid
 }
