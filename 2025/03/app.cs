@@ -17,18 +17,45 @@ public class BatteryBank
         }
     }
 
-    public int CalculateLargestVoltage()
+    const int _maxLength = 12;
+    public string CalculateLargestVoltage()
     {
-        var largestVoltage = 0;
+        var currentIndex = 0;
+        var remainingLength = _maxLength;
+        var voltages = new List<int>();
 
-        for (int first = 0; first < _batteries.Length - 1; first++)
-        for (int second = first + 1; second < _batteries.Length; second++)
+        while (remainingLength > 0)
         {
-            var combinedVoltage = _batteries[first].Voltage * 10 + _batteries[second].Voltage;
-            largestVoltage = Math.Max(largestVoltage, combinedVoltage);
+            var workingLength = _batteries.Length - currentIndex - remainingLength + 1;
+
+            var selectedBatteries = _batteries.AsSpan(currentIndex, workingLength);
+            var foundIndex = FindFirstLargestVoltageInRange(selectedBatteries);
+
+            voltages.Add(_batteries[currentIndex + foundIndex].Voltage);
+            currentIndex = currentIndex + foundIndex + 1;
+            remainingLength--;
         }
 
-        return largestVoltage;
+        var result = string.Join("", voltages);
+        //Console.WriteLine(result);
+        return result;
+    }
+
+    private int FindFirstLargestVoltageInRange(ReadOnlySpan<Battery> batteries)
+    {
+        var largestVoltage = 0;
+        var firstLargestBatteryIndex = 0;
+
+        for (int i = 0; i < batteries.Length; i++)
+        {
+            if (batteries[i].Voltage > largestVoltage)
+            {
+                largestVoltage = batteries[i].Voltage;
+                firstLargestBatteryIndex = i;
+            }
+        }
+
+        return firstLargestBatteryIndex;
     }
 }
 
@@ -46,5 +73,5 @@ public static class HelperExtensions
 {
     public static IEnumerable<BatteryBank> ConvertToBatteryBanks(this IEnumerable<string> lines) => lines.Select(line => new BatteryBank(line));
 
-    public static int SumLargestVoltageForEachBank(this IEnumerable<BatteryBank> banks) => banks.Sum(bank => bank.CalculateLargestVoltage());
+    public static long SumLargestVoltageForEachBank(this IEnumerable<BatteryBank> banks) => banks.Sum(bank => long.Parse(bank.CalculateLargestVoltage()));
 }
