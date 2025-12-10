@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.0.11205.157 d18.0
+VisualStudioVersion = 18.0.11205.157
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "aoc", "template\aoc.csproj", "{5F51B4F3-0AF7-4C8E-B73D-7FDAAE8FBF6C}"
 EndProject
@@ -100,6 +100,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "02", "2025\02\02.csproj", "{65664EA9-19FE-F97E-F8BA-BDF8B8A6EB68}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "03", "2025\03\03.csproj", "{A310C12A-6EF8-B11E-6473-7405BA578A0A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "04", "2025\04\04.csproj", "{083DE268-310C-4DEB-21D1-4A8E6B1DA12E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -279,6 +281,10 @@ Global
 		{A310C12A-6EF8-B11E-6473-7405BA578A0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A310C12A-6EF8-B11E-6473-7405BA578A0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A310C12A-6EF8-B11E-6473-7405BA578A0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{083DE268-310C-4DEB-21D1-4A8E6B1DA12E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{083DE268-310C-4DEB-21D1-4A8E6B1DA12E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{083DE268-310C-4DEB-21D1-4A8E6B1DA12E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{083DE268-310C-4DEB-21D1-4A8E6B1DA12E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -326,6 +332,7 @@ Global
 		{8DB9CDDC-9307-3B6E-8120-9853BCFD274F} = {6FB9A48B-9EDE-41C4-9EA2-DF840CF0556F}
 		{65664EA9-19FE-F97E-F8BA-BDF8B8A6EB68} = {6FB9A48B-9EDE-41C4-9EA2-DF840CF0556F}
 		{A310C12A-6EF8-B11E-6473-7405BA578A0A} = {6FB9A48B-9EDE-41C4-9EA2-DF840CF0556F}
+		{083DE268-310C-4DEB-21D1-4A8E6B1DA12E} = {6FB9A48B-9EDE-41C4-9EA2-DF840CF0556F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5404EA43-A4D8-44F8-B6E0-C753C383C520}
