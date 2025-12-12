@@ -1,6 +1,8 @@
-﻿var lines = File.ReadLines("test-input.txt").ToArray();
+﻿using System;
 
-var ranges = new List<FreshItemRange>();
+var lines = File.ReadLines("input.txt").ToArray();
+
+var ranges = new List<FreshItemRange?>();
 var processing = Processing.Ranges;
 foreach (var line in lines)
 {
@@ -17,46 +19,45 @@ foreach (var line in lines)
     }
 }
 
-var finalRanges = new List<FreshItemRange>(ranges);
-foreach (var range in ranges)
+var atLeastOneMerge = true;
+while (atLeastOneMerge == true)
 {
-    if (finalRanges.Count == 0)
-    {
-        finalRanges.Add(range);
-    }
+    atLeastOneMerge = false;
 
-    var tempRange = new FreshItemRange(range.Start, range.End);
-    var removedRanges = new List<int>();
-    for (int i = 0; i < finalRanges.Count; i++)
+    for (int outerIndex = 0; outerIndex < ranges.Count; outerIndex++)
     {
-        if (finalRanges[i] == range)
+        if (ranges[outerIndex] == null)
         {
-            // don't check yo self
             continue;
         }
 
-        if (TryMerge(range, finalRanges[i], out var newRange))
+        for (int innerIndex = 0; innerIndex < ranges.Count; innerIndex++)
         {
-            tempRange = newRange;
-            removedRanges.Add(i);
+            if (innerIndex == outerIndex)
+            {
+                continue;
+            }
+
+            if (TryMerge(ranges[outerIndex]!, ranges[innerIndex]!, out var newRange))
+            {
+                atLeastOneMerge = true;
+                ranges[outerIndex] = newRange;
+                ranges[innerIndex] = null;
+            }
         }
     }
-
-    removedRanges.Reverse();
-    foreach (var rangeIndex in removedRanges)
-    {
-        finalRanges.RemoveAt(rangeIndex);
-    }
-
-    finalRanges.Add(tempRange);
 }
 
-Console.WriteLine($"fresh item count: {finalRanges.Sum(range => range.Count)}");
+Console.WriteLine($"fresh item count: {ranges.Sum(range => range?.Count)}");
 
 
-static bool TryMerge(FreshItemRange first, FreshItemRange second, out FreshItemRange newRange)
+static bool TryMerge(FreshItemRange? first, FreshItemRange? second, out FreshItemRange? newRange)
 {
-    newRange = new FreshItemRange("0-0");
+    newRange = null;
+    if (first == null || second == null)
+    {
+        return false;
+    }
 
     if (first.Contains(second.Start) && !first.Contains(second.End))
     {
@@ -140,7 +141,7 @@ class FreshItemRange
         }
     }
 
-    public long Count => End - Start;
+    public long Count => End - Start + 1;
 }
 
 class Item
