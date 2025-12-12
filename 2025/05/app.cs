@@ -1,14 +1,13 @@
-﻿var lines = File.ReadLines("input.txt").ToArray();
+﻿var lines = File.ReadLines("test-input.txt").ToArray();
 
 var ranges = new List<FreshItemRange>();
-var items = new List<Item>();
 var processing = Processing.Ranges;
 foreach (var line in lines)
 {
     if (string.IsNullOrEmpty(line))
     {
         processing = Processing.Items;
-        continue;
+        break;
     }
 
     if (processing == Processing.Ranges)
@@ -16,17 +15,91 @@ foreach (var line in lines)
         ranges.Add(new FreshItemRange(line));
         continue;
     }
-
-    if (processing == Processing.Items)
-    {
-        items.Add(new Item(line));
-        continue;
-    }
 }
 
-var count = items.Count(item => ranges.Any(range => range.Contains(item)));
-Console.WriteLine($"fresh item count: {count}");
+var finalRanges = new List<FreshItemRange>(ranges);
+foreach (var range in ranges)
+{
+    if (finalRanges.Count == 0)
+    {
+        finalRanges.Add(range);
+    }
 
+    var tempRange = new FreshItemRange(range.Start, range.End);
+    var removedRanges = new List<int>();
+    for (int i = 0; i < finalRanges.Count; i++)
+    {
+        if (finalRanges[i] == range)
+        {
+            // don't check yo self
+            continue;
+        }
+
+        if (TryMerge(range, finalRanges[i], out var newRange))
+        {
+            tempRange = newRange;
+            removedRanges.Add(i);
+        }
+    }
+
+    removedRanges.Reverse();
+    foreach (var rangeIndex in removedRanges)
+    {
+        finalRanges.RemoveAt(rangeIndex);
+    }
+
+    finalRanges.Add(tempRange);
+}
+
+Console.WriteLine($"fresh item count: {finalRanges.Sum(range => range.Count)}");
+
+
+static bool TryMerge(FreshItemRange first, FreshItemRange second, out FreshItemRange newRange)
+{
+    newRange = new FreshItemRange("0-0");
+
+    if (first.Contains(second.Start) && !first.Contains(second.End))
+    {
+        // layout
+        // 1: |----|
+        // 2:   |-----|
+
+        newRange = new(first.Start, second.End);
+        return true;
+    }
+
+    if (!first.Contains(second.Start) && first.Contains(second.End))
+    {
+        // layout
+        // 1:   |----|
+        // 2: |----|
+
+        newRange = new(second.Start, first.End);
+        return true;
+    }
+
+    if (first.Contains(second.Start) && first.Contains(second.End))
+    {
+        // layout
+        // 1: |------|
+        // 2:   |--|
+
+        newRange = new(first.Start, first.End);
+        return true;
+    }
+
+    if (second.Contains(first.Start) && second.Contains(first.End))
+    {
+        // layout
+        // 1:   |--|
+        // 2: |------|
+
+        newRange = new(second.Start, second.End);
+        return true;
+    }
+
+    return false;
+}
 
 enum Processing
 {
@@ -46,10 +119,28 @@ class FreshItemRange
         End = long.Parse(range.Slice(split + 1));
     }
 
-    public bool Contains(Item item)
+    public FreshItemRange(long start, long end)
     {
-        return item.Id >= Start && item.Id <= End;
+        Start = start;
+        End = end;
     }
+
+    public bool Contains(Item item) => Contains(item.Id);
+
+    public bool Contains(long id)
+    {
+        return id >= Start && id <= End;
+    }
+
+    public IEnumerable<long> GetItemIds()
+    {
+        for (long id = Start; id <= End; id++)
+        {
+            yield return id;
+        }
+    }
+
+    public long Count => End - Start;
 }
 
 class Item
